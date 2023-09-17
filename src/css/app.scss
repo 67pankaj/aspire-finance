@@ -1,1 +1,28 @@
-// app global css in SCSS form
+// color classes for extra color variable added
+.text-primary-variant {
+  color: $primary-variant !important;
+}
+.bg-primary-variant {
+  background: $primary-variant !important;
+}
+
+// extra typography classes for font-size
+.text-small {
+  font-size: 0.5625rem;
+  line-height: 0.875rem;
+  letter-spacing: normal;
+  font-weight: 400;
+}
+
+// app css
+html,
+body {
+  font-family: "Open Sans", sans-serif;
+  font-size: 16px;
+  color: $dark;
+}
+
+// disable outline
+* {
+  outline: none;
+}
