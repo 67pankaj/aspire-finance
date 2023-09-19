@@ -1,16 +1,20 @@
 // Initial static data to be used across app
 
 import {
-  home,
-  card,
-  payment,
-  credit,
   account,
+  amex,
+  card,
+  credit,
+  discover,
   freezeCard,
   gpay,
+  home,
+  mastercard,
+  payment,
+  replaceCard,
   spendLimit,
   trash,
-  replaceCard,
+  visa,
 } from "./icons";
 
 export const navLinks = [
@@ -34,7 +38,11 @@ export const navLinks = [
 ];
 
 export const cardActions = [
-  { name: "freeze", icon: freezeCard, label: "Freeze card" },
+  {
+    name: "freeze",
+    icon: freezeCard,
+    label: "Freeze card",
+  },
   { name: "limit", icon: spendLimit, label: "Set spend limit" },
   {
     name: "gpay",
@@ -52,3 +60,5 @@ export const cardActions = [
     label: "Cancel card",
   },
 ];
+
+export const cardProviderIcons = [visa, mastercard, discover, amex];

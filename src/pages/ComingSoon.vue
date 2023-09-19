@@ -1,6 +1,9 @@
 <template>
   <q-page class="column flex-center">
-    <span>Coming Soon!!!</span>
+    <span class="text-body1 text-weight-semibold">Coming Soon!!!</span>
+    <span class="text-body1 text-weight-semibold"
+      >Please visit Cards section from the menu</span
+    >
     <img
       alt="Quasar logo"
       src="~assets/logo-brand.svg"

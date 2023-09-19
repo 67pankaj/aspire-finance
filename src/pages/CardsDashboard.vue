@@ -23,6 +23,7 @@
         color="primary-variant"
         :text-color="$q.screen.xs ? 'accent' : 'white'"
         class="rounded-borders"
+        @click="onAddCard"
       >
         <q-icon :name="add" size="16px" />
         <span class="text-body2 text-weight-bold q-ml-sm">New card</span>
@@ -78,8 +79,8 @@
       >
         <q-tab-panels
           v-model="cardPanel"
-          transition-prev="slide-right"
-          transition-next="slide-left"
+          transition-prev="scale"
+          transition-next="scale"
           animated
           class="col-grow row"
           :class="[
@@ -87,6 +88,7 @@
           ]"
         >
           <q-tab-panel
+            v-if="myCards && myCards.length"
             name="my-cards"
             class="q-pa-none no-wrap"
             :class="[$q.screen.xs ? 'column' : 'row justify-between']"
@@ -94,7 +96,6 @@
             <div class="col-auto column">
               <!-- cards carousel panel -->
               <q-carousel
-                v-model="myCardSlider"
                 transition-prev="scale"
                 transition-next="scale"
                 swipeable
@@ -104,6 +105,7 @@
                 navigation
                 height="auto"
                 class="card-carousel bg-transparent"
+                v-model="cardSlider"
               >
                 <template v-slot:navigation-icon="{ active, onClick }">
                   <div
@@ -113,51 +115,97 @@
                   />
                 </template>
 
-                <q-carousel-slide :name="0" class="q-pa-none">
-                  <UserCard />
-                </q-carousel-slide>
-                <q-carousel-slide :name="1" class="q-pa-none">
-                  <UserCard />
-                </q-carousel-slide>
-                <q-carousel-slide :name="2" class="q-pa-none">
-                  <UserCard />
-                </q-carousel-slide>
-                <q-carousel-slide :name="3" class="q-pa-none">
-                  <UserCard />
+                <q-carousel-slide
+                  v-for="(card, index) in myCards"
+                  :key="index"
+                  :name="index"
+                  class="q-pa-none"
+                >
+                  <UserCard v-bind="card" />
                 </q-carousel-slide>
               </q-carousel>
 
               <!-- card actions -->
               <div
-                class="actions q-pa-md row no-wrap items-start text-dark"
+                class="actions q-py-md row no-wrap items-start text-dark"
                 :class="[
                   $q.screen.xs
-                    ? 'rounded-borders-2xl actions--mobile'
-                    : 'rounded-borders-xl',
+                    ? 'rounded-borders-2xl q-px-sm actions--mobile'
+                    : 'rounded-borders-xl q-px-md',
                 ]"
               >
+                <!-- action -- freeze -->
                 <div
-                  v-for="(item, index) in cardActions"
-                  :key="`action-${index}`"
-                  class="actions__item col column flex-center q-pa-xs text-center cursor-pointer"
+                  class="actions__item col column flex-center text-center cursor-pointer"
+                  @click="toggleFreezeStatus"
                 >
                   <q-avatar
                     color="primary-variant"
-                    :icon="item.icon"
+                    :icon="freezeCard"
                     size="32px"
-                    :font-size="item.name == 'freeze' ? '16px' : '32px'"
+                    font-size="16px"
+                    :class="[activeCard.freezed ? 'rotate-180' : '']"
                   />
                   <div class="q-pt-sm text-body2">
-                    {{ item.label }}
+                    {{ activeCard.freezed ? "Unfreeze" : "Freeze" }} card
                   </div>
+                </div>
+
+                <!-- action -- set limit -->
+                <div
+                  class="actions__item col column flex-center text-center cursor-pointer"
+                >
+                  <q-avatar
+                    color="primary-variant"
+                    :icon="spendLimit"
+                    size="32px"
+                    font-size="32px"
+                  />
+                  <div class="q-pt-sm text-body2">Set spend limit</div>
+                </div>
+
+                <!-- action -- add gpay -->
+                <div
+                  class="actions__item col column flex-center text-center cursor-pointer"
+                >
+                  <q-icon color="primary-variant" :name="gpay" size="32px" />
+                  <div class="q-pt-sm text-body2">Add to GPay</div>
+                </div>
+
+                <!-- action -- replace card -->
+                <div
+                  class="actions__item col column flex-center text-center cursor-pointer"
+                  @click="onReplaceCard"
+                >
+                  <q-avatar
+                    color="primary-variant"
+                    :icon="replaceCard"
+                    size="32px"
+                    font-size="32px"
+                  />
+                  <div class="q-pt-sm text-body2">Replace card</div>
+                </div>
+
+                <!-- action -- cancel card -->
+                <div
+                  class="actions__item col column flex-center text-center cursor-pointer"
+                  @click="onCancelCard"
+                >
+                  <q-avatar
+                    color="primary-variant"
+                    :icon="trash"
+                    size="32px"
+                    font-size="32px"
+                  />
+                  <div class="q-pt-sm text-body2">Cancel card</div>
                 </div>
               </div>
             </div>
 
             <!-- card details and transactions -->
             <div
-              class="col card-mixed-details"
-              :class="[$q.screen.xs ? 'q-pt-lg' : 'q-pl-2xl']"
+              class="col card-mixed-details text-dark"
+              :class="[$q.screen.xs ? 'q-pt-lg' : 'q-pl-2xl q-pt-lg']"
             >
               <!-- card details -->
               <div class="details-expansion">
@@ -206,9 +254,9 @@
                       />
                       <div class="q-px-sm col column items-start">
                         <span class="text-weight-semibold">Freeze status</span>
-                        <span class="text-body2 text-grey-6 q-mt-xs"
-                          >Frozen</span
-                        >
+                        <span class="text-body2 text-grey-6 q-mt-xs">{{
+                          activeCard.freezed ? "Frozen" : "Not Frozen"
+                        }}</span>
                       </div>
                       <q-btn
                         flat
@@ -217,9 +265,10 @@
                         padding="0 0"
                         color="primary-variant"
                         text-color="primary"
-                        label="Unfreeze"
+                        :label="activeCard.freezed ? 'Unfreeze' : 'Freeze'"
                         :ripple="false"
                         class="pure-flat text-weight-semibold"
+                        @click="toggleFreezeStatus"
                       />
                     </div>
                   </div>
@@ -445,9 +494,18 @@
               </div>
             </div>
           </q-tab-panel>
+          <q-tab-panel
+            v-else
+            name="my-cards"
+            class="q-pa-none flex flex-center"
+          >
+            <div class="text-body1 text-center">
+              No cards avilable. Please add a card.
+            </div>
+          </q-tab-panel>
 
-          <q-tab-panel name="company-cards" class="q-pa-none">
-            <div class="text-h6">Coming Soon!!!</div>
+          <q-tab-panel name="company-cards" class="q-pa-none flex flex-center">
+            <div class="text-body1 text-center">Coming Soon!!!</div>
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
@@ -456,24 +514,100 @@
 </template>
 
 <script setup>
+import { useQuasar } from "quasar";
 import UserCard from "components/UserCard.vue";
+import { useUserStore } from "stores/user";
 import {
   add,
   cardDetails,
   cardPlain,
-  freezeCard,
-  storage,
-  recentTransaction,
   flight,
+  freezeCard,
+  spendLimit,
+  gpay,
+  replaceCard,
+  trash,
   megaphone,
+  recentTransaction,
+  storage,
 } from "utils/icons";
-import { cardActions } from "utils/initials";
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { storeToRefs } from "pinia";
 
+const $q = useQuasar();
+
+const userStore = useUserStore();
+const myCards = computed(() => {
+  return userStore.userCards;
+});
+// const { userCards: myCards } = storeToRefs(userStore);
 const cardPanel = ref("my-cards");
-const myCardSlider = ref(0);
+const cardSlider = ref(0);
+
+const activeCard = computed(() => {
+  return myCards.value[cardSlider.value];
+});
 
 const transactionsExpanded = ref(true);
+
+function toggleFreezeStatus() {
+  userStore.toggleCardFreeze(cardSlider.value);
+}
+
+function onReplaceCard() {
+  $q.dialog({
+    title: "Replace your card",
+    message: "Please enter other name? (Minimum 3 characters)",
+    prompt: {
+      model: "",
+      isValid: (val) =>
+        val &&
+        val.trim().length > 2 &&
+        val.trim().toLowerCase() !== activeCard.value.cardName.toLowerCase() &&
+        /^[a-zA-Z\s]*$/.test(val),
+      type: "text",
+      maxlength: "30",
+    },
+    cancel: true,
+  }).onOk((data) => {
+    const cardName = data
+      .trim()
+      .toLowerCase()
+      .replace(/\b\w/g, (sub) => sub.toUpperCase());
+    userStore.replaceCard(cardName, cardSlider.value);
+  });
+}
+
+function onCancelCard() {
+  $q.dialog({
+    title: "Delete card",
+    message: "Are you sure you want to delete this card?",
+    cancel: true,
+  }).onOk((data) => {
+    userStore.removeCard(cardSlider.value);
+  });
+}
+
+function onAddCard() {
+  $q.dialog({
+    title: "Add new card",
+    message: "Please enter your name? (Minimum 3 characters)",
+    prompt: {
+      model: "",
+      isValid: (val) =>
+        val && val.trim().length > 2 && /^[a-zA-Z\s]*$/.test(val),
+      type: "text",
+      maxlength: "30",
+    },
+    cancel: true,
+  }).onOk((data) => {
+    const cardName = data
+      .trim()
+      .toLowerCase()
+      .replace(/\b\w/g, (sub) => sub.toUpperCase());
+    userStore.addCard(cardName);
+  });
+}
 </script>
 
 <style lang="scss" scoped>
@@ -520,9 +654,9 @@ const transactionsExpanded = ref(true);
   min-width: 312px;
   max-width: 414px;
   &--mobile {
-    margin-left: -24px;
-    margin-right: -24px;
-    max-width: 100vw;
+  }
+  &__item {
+    padding: 4px 2px;
   }
 }
 

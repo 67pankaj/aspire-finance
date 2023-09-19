@@ -24,6 +24,7 @@
     <q-card
       flat
       class="card-details rounded-borders-lg bg-secondary q-pa-lg text-white"
+      :class="[freezed ? 'card-details--dim' : '']"
     >
       <!-- brand logo -->
       <div class="row justify-end" :class="[$q.screen.xs ? '' : 'q-pb-xs']">
@@ -31,14 +32,17 @@
           :name="brandLogo"
           size="24px"
           class="card-details__logo"
-          :class="[$q.screen.xs ? 'card-details__logo--mobile' : '']"
+          :class="[
+            $q.screen.xs ? 'card-details__logo--mobile' : '',
+            freezed ? 'text-negative' : '',
+          ]"
         />
       </div>
 
       <!-- card name -->
       <div
-        class="card-name q-py-lg text-left text-weight-bold text-wide"
-        :class="[$q.screen.xs ? 'text-h5' : 'text-h4']"
+        class="card-name q-py-lg text-left text-weight-bold text-wide ellipsis"
+        :class="[$q.screen.xs ? 'card-name--mobile text-h5' : 'text-h4']"
       >
         {{ cardName }}
       </div>
@@ -79,7 +83,7 @@
           :class="[$q.screen.xs ? 'q-pr-md' : 'q-pr-lg']"
         >
           <span>Thru: </span>
-          <span class="text-wider">12/20</span>
+          <span class="text-wider">{{ cardThru }}</span>
         </div>
         <div class="card-info__cvv row items-center q-pl-md">
           <span>CVV:</span>
@@ -94,7 +98,7 @@
       <!-- card provider -->
       <div class="row justify-end">
         <q-icon
-          :name="visa"
+          :name="cardProviderIcons[cardProvider]"
           class="card-details__provider"
           :class="[$q.screen.xs ? 'card-details__provider--mobile' : '']"
         />
@@ -104,14 +108,19 @@
 </template>
 
 <script setup>
-import { eye, brandLogo, visa, mastercard, discover, amex } from "utils/icons";
+import { brandLogo, eye } from "utils/icons";
+import { cardProviderIcons } from "utils/initials";
 import { ref } from "vue";
 
+const props = defineProps({
+  cardName: String,
+  cardNumber: Array,
+  cardThru: String,
+  cardProvider: Number,
+  freezed: Boolean,
+});
+
 const cardNumberPrivacy = ref(true);
-
-const cardName = "Pankaj Mishra";
-
-const cardNumber = ["1234", "2432", "5209", "2020"];
 
 function togglePrivacy() {
   cardNumberPrivacy.value = !cardNumberPrivacy.value;
@@ -131,6 +140,9 @@ function togglePrivacy() {
   box-sizing: border-box;
   min-width: 312px;
   max-width: 414px;
+  &--dim {
+    border: 1px solid $negative;
+  }
   &__logo {
     width: auto;
     height: 24px;
@@ -144,6 +156,12 @@ function togglePrivacy() {
     &--mobile {
       height: 20px;
     }
+  }
+}
+.card-name {
+  max-width: 320px;
+  &--mobile {
+    max-width: 264px;
   }
 }
 .card-number-section {
