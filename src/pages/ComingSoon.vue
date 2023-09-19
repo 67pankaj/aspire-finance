@@ -1,5 +1,6 @@
 <template>
-  <q-page class="flex flex-center">
+  <q-page class="column flex-center">
+    <span>Coming Soon!!!</span>
     <img
       alt="Quasar logo"
       src="~assets/logo-brand.svg"
@@ -8,10 +9,4 @@
   </q-page>
 </template>
 
-<script>
-import { defineComponent } from "vue";
-
-export default defineComponent({
-  name: "IndexPage",
-});
-</script>
+<script setup></script>

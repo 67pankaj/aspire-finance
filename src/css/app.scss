@@ -5,13 +5,86 @@
 .bg-primary-variant {
   background: $primary-variant !important;
 }
+.text-backdrop-blue {
+  color: $backdrop-blue !important;
+}
+.bg-backdrop-blue {
+  background: $backdrop-blue !important;
+}
+.text-backdrop-green {
+  color: $backdrop-green !important;
+}
+.bg-backdrop-green {
+  background: $backdrop-green !important;
+}
+.text-backdrop-red {
+  color: $backdrop-red !important;
+}
+.bg-backdrop-red {
+  background: $backdrop-red !important;
+}
+
+// extra button classes
+.pure-flat {
+  .q-focus-helper {
+    visibility: hidden !important;
+  }
+}
 
 // extra typography classes for font-size
 .text-small {
-  font-size: 0.5625rem;
-  line-height: 0.875rem;
+  font-size: 0.625rem;
+  line-height: 1rem;
   letter-spacing: normal;
   font-weight: 400;
+}
+
+.text-wide {
+  letter-spacing: 0.05rem;
+}
+
+.text-wider {
+  letter-spacing: 0.1rem;
+}
+
+.text-widest {
+  letter-spacing: 0.3rem;
+}
+
+.root-line-height {
+  line-height: 1rem;
+}
+
+// extra classes for rounded-borders
+.rounded-borders {
+  &-md {
+    border-radius: 8px;
+  }
+  &-lg {
+    border-radius: 12px;
+  }
+  &-xl {
+    border-radius: 16px;
+  }
+  &-2xl {
+    border-radius: 24px;
+  }
+}
+
+// navigator classes
+.navigator {
+  width: 8px;
+  height: 8px;
+  @extend .rounded-borders-md;
+  opacity: 0.2;
+  background-color: $secondary;
+  transition-property: background-color, width, opacity;
+  transition-duration: 200ms;
+  transition-timing-function: ease-in;
+  &--active {
+    width: 16px;
+    opacity: 1;
+  }
 }
 
 // app css
@@ -25,4 +98,5 @@ body {
 // disable outline
 * {
   outline: none;
+  user-select: none;
 }

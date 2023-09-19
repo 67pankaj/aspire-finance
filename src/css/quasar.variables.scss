@@ -12,6 +12,8 @@
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
+@use "quasar/src/css/variables.sass" as q;
+
 $primary: #0c365a;
 $secondary: #01d167;
 $accent: #23cefd;
@@ -19,13 +21,18 @@ $accent: #23cefd;
 $dark: #222222;
 $dark-page: #121212;
 
-$positive: #21ba45;
-$negative: #c10015;
-$info: #31ccec;
+$positive: #00d6b5;
+$negative: #f25195;
+$info: #009dff;
 $warning: #f2c037;
 
 // adding extra color variable
 $primary-variant: #325baf;
+
+// color variables for backdrop
+$backdrop-blue: #009dff1a;
+$backdrop-green: #00d6b51a;
+$backdrop-red: #f251951a;
 
 // adding semibold text-weight
 $text-weights: (
@@ -110,4 +117,75 @@ $caption: (
   line-height: 1.125rem,
   letter-spacing: 0.03333em,
   weight: 400,
+) !default;
+
+// spaces and gutter override
+$space-2xs: (
+  x: (
+    q.$space-x-base * 0.125,
+  ),
+  y: (
+    q.$space-y-base * 0.125,
+  ),
+) !default;
+$space-xl: (
+  x: (
+    q.$space-x-base * 2,
+  ),
+  y: (
+    q.$space-y-base * 2,
+  ),
+) !default;
+$space-xl: (
+  x: (
+    q.$space-x-base * 2,
+  ),
+  y: (
+    q.$space-y-base * 2,
+  ),
+) !default;
+$space-2xl: (
+  x: (
+    q.$space-x-base * 3,
+  ),
+  y: (
+    q.$space-y-base * 3,
+  ),
+) !default;
+$space-3xl: (
+  x: (
+    q.$space-x-base * 3.75,
+  ),
+  y: (
+    q.$space-y-base * 3.75,
+  ),
+) !default;
+
+$spaces: (
+  "none": q.$space-none,
+  "2xs": $space-2xs,
+  "xs": q.$space-xs,
+  "sm": q.$space-sm,
+  "md": q.$space-md,
+  "lg": q.$space-lg,
+  "xl": $space-xl,
+  "2xl": $space-2xl,
+  "3xl": $space-3xl,
+) !default;
+
+$flex-gutter-2xs: (q.$space-base * 0.125) !default;
+$flex-gutter-xl: (q.$space-base * 2) !default;
+$flex-gutter-2xl: (q.$space-base * 3) !default;
+$flex-gutter-3xl: (q.$space-base * 3.75) !default;
+
+$flex-gutter: (
+  "none": 0,
+  "2xs": $flex-gutter-2xs,
+  "xs": q.$flex-gutter-xs,
+  "sm": q.$flex-gutter-sm,
+  "md": q.$flex-gutter-md,
+  "lg": q.$flex-gutter-lg,
+  "xl": $flex-gutter-xl,
+  "2xl": $flex-gutter-2xl,
+  "3xl": $flex-gutter-3xl,
 ) !default;
